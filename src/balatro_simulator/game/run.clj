@@ -2,7 +2,7 @@
 
 (defn new-run-state [deck-key stake]
   (atom {:ante-idx 0
-         :antes []
+         :antes
          :round-idx 0
          :stake stake
          :player (new-player deck-key stake)}))
@@ -13,4 +13,4 @@
   (let [s (new-run-state deck-key stake)
         a (new-ante)]))
 
-(defn new-ante [game-state])
+;; run -> (:ante

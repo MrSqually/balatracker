@@ -24,6 +24,7 @@
 
 (defn discard-hand [player])
 
+(defn init-player-round [game-state])
 ;;----------------------------------------------------------------------------|
 ;; Type & Constructor
 (defrecord Player [active-hand hands discards deck money jokers consumables])
