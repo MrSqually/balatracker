@@ -1,0 +1,16 @@
+{
+	"id": "balatracker",
+	"name": "Balatracker",
+	"version": "0.0.2",
+	"description": ["Game endpoint for the Balatracker Analytics tool"],
+	"author": "Mr.Squally",
+	"load_before": [],
+  	"load_after": [],
+  	"commands": [
+  	{"name": "dump",
+  	"lua_path": "dump",
+  	"short_description": "dump the game state to logs",
+  	"usage": "Usage: dump"}
+  	]
+}
+

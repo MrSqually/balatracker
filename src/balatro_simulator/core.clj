@@ -1,7 +1,9 @@
 (ns balatro-simulator.core
+  (:require [clojure.string :as string])
   (:gen-class))
 
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (println "Hello, World!"))
+(defn -main [& args]
+  (println (hello-name "Dean")))
+
+(defn hello-name [name]
+  (str "Hello, " name))
