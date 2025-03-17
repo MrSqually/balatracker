@@ -5,36 +5,38 @@
 (ns balatro-simulator.parser
   (:require [clojure.string :as str]))
 
+(def fname "resources/mod/game_dumps/g_pcenters.txt")
 (def token-map
   {\{ :START-TABLE
    \} :END-TABLE
    \= :|
    \, :END-PAIR})
 
+(defn lua-table-eval
+  ([])
+  ([res])
+  ([res inp]))
+
 (defn cat-chars []
   (fn [xf]
     (fn
       ([] (xf))
       ([res] (xf res))
-      ([[res-seq curr-str] inp]
-       (if (char? inp)
-         (str/join inp)
-         (xf res inp))))))
+      ([res inp]
+       (if (keyword? inp)
+         (xf (vec res) inp)
+         (let [[prg prv] (split-at (dec (count res)) res)]
+           (if (keyword? (first prv))
+             (xf (vec res) inp)
+             (xf (vec prg) (str (apply str prv) inp)))))))))
 
-(defn test-fn [a e]
-  (if (char? e)
-    (conj a (str (last a) e))
-    (conj a e)))
-
-(reduce test-fn ["hi"] "world")
-
-(def lua-table-parser
+(def lua-table-xform
   (comp
-   (map #(if-let [expr (token-map %)] expr %))))
-
-   ;; replace each form with its function, else with (lazy-seq a)))
-
-(map #(if-let [y (token-map %)] y %) "{hello=world, date=true}")
+   (map #(if-let [expr (token-map %)] expr %))
+   (filter #(not= \space %))
+   (cat-chars)))
 
 (defn parse [table-str]
-  (transduce lua-table-parser conj table-str))
+  (transduce lua-table-xform conj table-str))
+
+(parse "{hello=world, something={table=false}}")
