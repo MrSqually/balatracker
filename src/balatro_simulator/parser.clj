@@ -3,40 +3,29 @@
 ;; allows for hot-loading of game state.
 
 (ns balatro-simulator.parser
-  (:require [clojure.string :as str]))
+  (:require
+   [clojure.string :as string]))
 
 (def fname "resources/mod/game_dumps/g_pcenters.txt")
-(def token-map
-  {\{ :START-TABLE
-   \} :END-TABLE
-   \= :|
-   \, :END-PAIR})
 
-(defn lua-table-eval
-  ([])
-  ([res])
-  ([res inp]))
+(defn preprocess-table
+  "string regularization"
+  [table]
+  (reduce (fn [res [match replace]]
+            (string/replace res match replace))
+          table
+          [["=" " "] ["," " "]]))
 
-(defn cat-chars []
-  (fn [xf]
-    (fn
-      ([] (xf))
-      ([res] (xf res))
-      ([res inp]
-       (if (keyword? inp)
-         (xf (vec res) inp)
-         (let [[prg prv] (split-at (dec (count res)) res)]
-           (if (keyword? (first prv))
-             (xf (vec res) inp)
-             (xf (vec prg) (str (apply str prv) inp)))))))))
+(defn parse-lua-table
+  ""
+  [table]
+  (let [tbl (->> table preprocess-table read-string)]
+    (into {} (for [[k v] tbl]
+               [(keyword k)
+                (if (map? v)
+                  (parse-lua-table v)
+                  (str v))]))))
 
-(def lua-table-xform
-  (comp
-   (map #(if-let [expr (token-map %)] expr %))
-   (filter #(not= \space %))
-   (cat-chars)))
+(parse-lua-table "{hello=world, today={day=tuesday, weather=great}}")
 
-(defn parse [table-str]
-  (transduce lua-table-xform conj table-str))
-
-(parse "{hello=world, something={table=false}}")
+(parse-lua-table (slurp fname))

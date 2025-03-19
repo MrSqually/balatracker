@@ -2,8 +2,6 @@
   (:require [clojure.string :as string])
   (:gen-class))
 
-(defn -main [& args]
-  (println (hello-name "Dean")))
+(defn -main [& args])
 
-(defn hello-name [name]
-  (str "Hello, " name))
+;; Utilities
